@@ -1,10 +1,52 @@
 import { env } from "~/env.mjs";
 import { openSourceModels, tempLlama3HackGetRevision } from "~/models";
-import { promises as fs } from "fs";
+import fs from "node:fs";
 import { resolve } from "path";
 import { z } from "zod";
+import path from "path";
 
-async function download() {
+const publicDir = resolve(process.cwd(), "public");
+
+async function download(modelName: string, file: string) {
+  const filePath = resolve(publicDir, "hf", modelName, file);
+  const dirPath = path.dirname(filePath);
+
+  try {
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true });
+    }
+
+    // Skip if file already exists
+    if (fs.existsSync(filePath)) {
+      console.log(`Skipping ${filePath}`);
+      return;
+    }
+
+    const response = await fetch(
+      `https://huggingface.co/${modelName}/resolve/main/${file}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.HF_API_KEY}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      console.warn(`Warning: Failed to fetch ${file} for ${modelName}`);
+      return;
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+    fs.writeFileSync(filePath, uint8Array);
+    console.log(`Writing to ${filePath}`);
+  } catch (error) {
+    console.warn(`Warning: Error downloading ${file} for ${modelName}:`, error);
+  }
+}
+
+async function downloadAll() {
   for (const modelName of Object.values(openSourceModels.Values)) {
     const [orgId, modelId] = z
       .tuple([z.string(), z.string()])
@@ -13,40 +55,9 @@ async function download() {
     const rev = tempLlama3HackGetRevision(modelName);
 
     for (const file of ["tokenizer.json", "tokenizer_config.json"]) {
-      const targetDir = resolve("public/hf", orgId, modelId);
-      const targetPath = resolve(targetDir, file);
-
-      try {
-        if (await fs.stat(targetPath).catch(() => null)) {
-          console.log("Skipping", targetPath);
-          continue;
-        }
-
-        const res = await fetch(
-          `https://huggingface.co/${orgId}/${modelId}/resolve/${encodeURIComponent(
-            rev
-          )}/${file}`,
-          {
-            headers: {
-              Authorization: `Bearer ${env.HF_API_KEY}`,
-              ContentType: "application/json",
-            },
-          }
-        );
-
-        if (!res.ok) {
-          console.warn(`Failed to fetch ${file} for ${modelName}`);
-          continue;
-        }
-
-        await fs.mkdir(targetDir, { recursive: true });
-        console.log("Writing to", targetPath);
-        await fs.writeFile(targetPath, await res.text());
-      } catch (error) {
-        console.warn(`Error downloading ${file} for ${modelName}:`, error);
-      }
+      await download(modelName, file);
     }
   }
 }
 
-download();
+downloadAll();
