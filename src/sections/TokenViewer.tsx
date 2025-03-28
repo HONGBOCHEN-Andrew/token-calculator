@@ -6,25 +6,25 @@ import { Checkbox } from "~/components/Checkbox";
 import { type TokenizerResult } from "~/models/tokenizer";
 
 const COLORS = [
-  "bg-sky-200",
-  "bg-amber-200",
-  "bg-blue-200",
-  "bg-green-200",
-  "bg-orange-200",
-  "bg-cyan-200",
-  "bg-gray-200",
-  "bg-purple-200",
-  "bg-indigo-200",
-  "bg-lime-200",
-  "bg-rose-200",
-  "bg-violet-200",
-  "bg-yellow-200",
-  "bg-emerald-200",
-  "bg-zinc-200",
-  "bg-red-200",
-  "bg-fuchsia-200",
-  "bg-pink-200",
-  "bg-teal-200",
+  "bg-sky-900/50",
+  "bg-amber-900/50",
+  "bg-blue-900/50",
+  "bg-green-900/50",
+  "bg-orange-900/50",
+  "bg-cyan-900/50",
+  "bg-gray-900/50",
+  "bg-purple-900/50",
+  "bg-indigo-900/50",
+  "bg-lime-900/50",
+  "bg-rose-900/50",
+  "bg-violet-900/50",
+  "bg-yellow-900/50",
+  "bg-emerald-900/50",
+  "bg-zinc-900/50",
+  "bg-red-900/50",
+  "bg-fuchsia-900/50",
+  "bg-pink-900/50",
+  "bg-teal-900/50",
 ];
 
 function encodeWhitespace(str: string) {
@@ -58,13 +58,13 @@ export function TokenViewer(props: {
   return (
     <>
       <div className="flex gap-4">
-        <div className="flex-grow rounded-md border bg-slate-50 p-4 shadow-sm">
-          <p className="text-sm ">Token count</p>
-          <p className="text-lg">{tokenCount}</p>
+        <div className="flex-grow rounded-md border border-slate-700 bg-slate-800 p-4 shadow-sm">
+          <p className="text-sm text-slate-400">Token count</p>
+          <p className="text-lg text-white">{tokenCount}</p>
         </div>
       </div>
 
-      <pre className="min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border bg-slate-50 p-4 shadow-sm">
+      <pre className="min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border border-slate-700 bg-slate-800 p-4 shadow-sm dark-scrollbar">
         {props.data?.segments?.map(({ text }, idx) => (
           <span
             key={idx}
@@ -73,7 +73,7 @@ export function TokenViewer(props: {
             className={cn(
               "transition-all",
               (indexHover == null || indexHover === idx) &&
-                COLORS[idx % COLORS.length],
+              COLORS[idx % COLORS.length],
               props.isFetching && "opacity-50"
             )}
           >
@@ -86,7 +86,7 @@ export function TokenViewer(props: {
 
       <pre
         className={
-          "min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border bg-slate-50 p-4 shadow-sm"
+          "min-h-[256px] max-w-[100vw] overflow-auto whitespace-pre-wrap break-all rounded-md border border-slate-700 bg-slate-800 p-4 shadow-sm dark-scrollbar"
         }
       >
         {props.data && tokenCount > 0 && (
@@ -106,7 +106,7 @@ export function TokenViewer(props: {
                       className={cn(
                         "transition-colors",
                         indexHover === segmentIdx &&
-                          COLORS[segmentIdx % COLORS.length]
+                        COLORS[segmentIdx % COLORS.length]
                       )}
                     >
                       {token.id}
