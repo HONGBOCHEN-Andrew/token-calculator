@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ![Tiktokenizer](https://user-images.githubusercontent.com/1443449/222597674-287aefdc-f0e1-491b-9bf9-16431b1b8054.svg)
 
 ***
@@ -15,3 +16,7 @@ https://user-images.githubusercontent.com/1443449/222598119-0a5a536e-6785-44ad-b
 - [T3 Stack](https://create.t3.gg/)
 - [shadcn/ui](https://github.com/shadcn/ui)
 - [openai/tiktoken](https://github.com/openai/tiktoken)
+=======
+# token-calculator
+A token calculator for various AI models
+>>>>>>> 731e9ccc955fef717b5c16a86746ddd0d7604a59
