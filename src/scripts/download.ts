@@ -1,5 +1,5 @@
 import { env } from "~/env.mjs";
-import { openSourceModels, tempLlama3HackGetRevision } from "~/models";
+import { openSourceModels } from "~/models";
 import fs from "node:fs";
 import { resolve } from "path";
 import { z } from "zod";
@@ -27,7 +27,7 @@ async function download(modelName: string, file: string) {
       `https://huggingface.co/${modelName}/resolve/main/${file}`,
       {
         headers: {
-          Authorization: `Bearer ${process.env.HF_API_KEY}`,
+          Authorization: `Bearer ${env.HF_API_KEY}`,
         },
       }
     );
