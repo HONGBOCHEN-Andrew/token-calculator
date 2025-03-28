@@ -16,31 +16,35 @@ async function download() {
       const targetDir = resolve("public/hf", orgId, modelId);
       const targetPath = resolve(targetDir, file);
 
-      if (await fs.stat(targetPath).catch(() => null)) {
-        console.log("Skipping", targetPath);
-        continue;
-      }
-
-      // eg https://huggingface.co/codellama/CodeLlama-7b-hf/resolve/main/tokenizer.json
-      const res = await fetch(
-        `https://huggingface.co/${orgId}/${modelId}/resolve/${encodeURIComponent(
-          rev
-        )}/${file}`,
-        {
-          headers: {
-            Authorization: `Bearer ${env.HF_API_KEY}`,
-            ContentType: "application/json",
-          },
+      try {
+        if (await fs.stat(targetPath).catch(() => null)) {
+          console.log("Skipping", targetPath);
+          continue;
         }
-      );
 
-      if (!res.ok) {
-        throw new Error(`Failed to fetch ${file} for ${modelName}`);
+        const res = await fetch(
+          `https://huggingface.co/${orgId}/${modelId}/resolve/${encodeURIComponent(
+            rev
+          )}/${file}`,
+          {
+            headers: {
+              Authorization: `Bearer ${env.HF_API_KEY}`,
+              ContentType: "application/json",
+            },
+          }
+        );
+
+        if (!res.ok) {
+          console.warn(`Failed to fetch ${file} for ${modelName}`);
+          continue;
+        }
+
+        await fs.mkdir(targetDir, { recursive: true });
+        console.log("Writing to", targetPath);
+        await fs.writeFile(targetPath, await res.text());
+      } catch (error) {
+        console.warn(`Error downloading ${file} for ${modelName}:`, error);
       }
-
-      await fs.mkdir(targetDir, { recursive: true });
-      console.log("Writing to", targetPath);
-      await fs.writeFile(targetPath, await res.text());
     }
   }
 }
